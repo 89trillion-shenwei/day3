@@ -33,8 +33,10 @@
 │   ├── handler
 │   │   ├── operation.go
 │   │   └── operation_test.go
-│   └── router
-│       └── router.go
+│   ├── router
+│   │   └── router.go
+│   └── service
+│       └── dealData.go
 └── locustfile.py
 
 
@@ -51,6 +53,7 @@
 |  model层  | /app/model/database.go         | redis储存需要的数据结构 | 被handler调用             | 不可同层调用 |
 | 压力测试  | locustfile.py                  | 进行压力测试            | 无调用关系                | 不可同层调用 |
 |  gError   | /internal/gError               | 统一异常处理            | 被handler调用             | 不可同层调用 |
+| service层 | /internal/service/dealDate.go  | 操作redis数据库         | 被handler层调用           | 不可同层调用 |
 
 ## 4.存储设计
 
