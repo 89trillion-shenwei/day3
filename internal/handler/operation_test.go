@@ -1,18 +1,18 @@
 package handler
 
 import (
-	"day3/app/model"
+	"day3/internal/service"
 	"testing"
 )
 
 //测试创建数据方法，若redis数据库里可以找到数据则success
 func TestSet(t *testing.T) {
-	message := model.Message{}
-	creator := model.Creator{}
+	message := service.Message{}
+	creator := service.Creator{}
 	message.Description = "测试一"
 	creator.CreaName = "测试员1"
 	key := Set(message, creator)
-	if model.CheckKey(key) {
+	if service.CheckKey(key) {
 		t.Log("success")
 		return
 	} else {
@@ -23,7 +23,7 @@ func TestSet(t *testing.T) {
 
 func TestGet(t *testing.T) {
 	key := "a8e46a16"
-	creator := model.Creator{}
+	creator := service.Creator{}
 	creator.CreaName = "测试员1"
 	got, _ := Get(key, creator)
 	if got != "" {
@@ -37,7 +37,7 @@ func TestGet(t *testing.T) {
 
 func TestUpdate(t *testing.T) {
 	key := "a8e46a16"
-	user := model.User{}
+	user := service.User{}
 	user.UserName = "用户一"
 	got, _ := Update(user, key)
 	want := "该礼品码已被领取完毕"
