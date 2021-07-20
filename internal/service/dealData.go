@@ -45,12 +45,12 @@ type User struct {
 }
 
 //字符串转时间戳
-func string2time(s string) int64 {
+func String2Time(s string) int64 {
 	loc, _ := time.LoadLocation("Local")
-	the_time, err := time.ParseInLocation("2006-01-02 15:04:05", s, loc)
+	theTime, err := time.ParseInLocation("2006-01-02 15:04:05", s, loc)
 	if err == nil {
-		unix_time := the_time.Unix()
-		return unix_time
+		unixTime := theTime.Unix()
+		return unixTime
 	} else {
 		panic(err)
 	}
@@ -124,7 +124,7 @@ func (User *User) StrUpdate(key string) (string, error) {
 		//领取时间
 		getList.GetTime = time.Now().Format("2006-01-02 15:04:05")
 		//判断领取时间是否超出有效期
-		if string2time(getList.GetTime) >= string2time(message.ValidPeriod) {
+		if String2Time(getList.GetTime) >= String2Time(message.ValidPeriod) {
 			return "该礼品码已过期", internal.KeyExpiredError("该礼品码已过期")
 		}
 		//判断该用户是否已经使用过该礼品码
