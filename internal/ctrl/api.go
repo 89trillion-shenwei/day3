@@ -69,7 +69,10 @@ func GetStrApi(c *gin.Context) (string, error) {
 		return "", internal.LenFalseError("礼品码不合法")
 	}
 	creator := new(service.Creator)
-	re, _ := handler.Get(key, *creator)
+	re, err := handler.Get(key, *creator)
+	if err != nil {
+		return "", err
+	}
 	return re, nil
 }
 
@@ -86,7 +89,10 @@ func StrUpdateApi(c *gin.Context) (string, error) {
 	if user.UserName == "" {
 		return "", internal.IsEmptyError("用户名不能为空")
 	}
-	re, _ := handler.Update(*user, key)
+	re, err := handler.Update(*user, key)
+	if err != nil {
+		return "", err
+	}
 	return re, nil
 }
 
