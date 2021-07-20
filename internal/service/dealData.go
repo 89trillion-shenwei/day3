@@ -48,20 +48,16 @@ type User struct {
 func String2Time(s string) int64 {
 	loc, _ := time.LoadLocation("Local")
 	theTime, err := time.ParseInLocation("2006-01-02 15:04:05", s, loc)
-	if err == nil {
-		unixTime := theTime.Unix()
-		return unixTime
-	} else {
-		panic(err)
+	if err != nil {
+		return 0
 	}
+	unixTime := theTime.Unix()
+	return unixTime
 }
 
 //结构体转json
 func struct2json(me interface{}) []byte {
-	byts, err := json.Marshal(me)
-	if err != nil {
-		fmt.Println("结构体转json发生异常:" + err.Error())
-	}
+	byts, _ := json.Marshal(me)
 	return byts
 }
 
@@ -69,7 +65,6 @@ func struct2json(me interface{}) []byte {
 func json2struct(byts []byte, message *Message) bool {
 	err := json.Unmarshal(byts, message)
 	if err != nil {
-		fmt.Println("json转结构体发生异常:" + err.Error())
 		return false
 	}
 	return true
@@ -77,15 +72,15 @@ func json2struct(byts []byte, message *Message) bool {
 }
 
 // StrSet 创建数据
-func (creator *Creator) StrSet(key string, message Message) {
+func (creator *Creator) StrSet(key string, message Message) error {
 	c := model.NewRedisPool(model.RedisURL, 1).Get()
 	defer c.Close()
 	//将结构体转为json字符串在存入redis
-	_, err := c.Do("SET", key, struct2json(message))
-	if err != nil {
-		fmt.Println("set error", err.Error())
+	_, err2 := c.Do("SET", key, struct2json(message))
+	if err2 != nil {
+		return internal.InternalServiceError(err2.Error())
 	} else {
-		fmt.Println("set ok.")
+		return nil
 	}
 }
 
@@ -93,13 +88,8 @@ func (creator *Creator) StrSet(key string, message Message) {
 func (creator *Creator) StrGet(key string) string {
 	c := model.NewRedisPool(model.RedisURL, 1).Get()
 	defer c.Close()
-	res, err := redis.String(c.Do("GET", key))
-	if err != nil {
-		fmt.Println("GET error", err.Error())
-		return ""
-	} else {
-		return res
-	}
+	res, _ := redis.String(c.Do("GET", key))
+	return res
 }
 
 // StrUpdate 用户领取礼品时更新数据库，增加领取人列表，修改可领取次数和已领取次数，返回礼品列表
@@ -109,12 +99,12 @@ func (User *User) StrUpdate(key string) (string, error) {
 	//查询数据
 	res, err := redis.String(c.Do("Get", key))
 	if err != nil {
-		fmt.Println("GET error", err.Error())
-		return "查询礼品时出错", nil
+		return "查询礼品时出错", internal.InternalServiceError(err.Error())
 	} else {
 		var byts []byte
 		byts = []byte(res)
 		message := Message{}
+		//json转结构体成功
 		if json2struct(byts, &message) {
 			fmt.Println("success")
 		}
@@ -146,7 +136,7 @@ func (User *User) StrUpdate(key string) (string, error) {
 		//提交更改后的数据
 		_, err := c.Do("SET", key, struct2json(message))
 		if err != nil {
-			fmt.Println("set error", err.Error())
+			return "", internal.InternalServiceError(err.Error())
 		} else {
 			fmt.Println("set ok.")
 		}
@@ -161,7 +151,6 @@ func CheckKey(key string) bool {
 	defer c.Close()
 	exist, err := redis.Bool(c.Do("EXISTS", key))
 	if err != nil {
-		fmt.Println(err)
 		return false
 	} else {
 		return exist

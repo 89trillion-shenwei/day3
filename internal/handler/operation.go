@@ -46,7 +46,6 @@ func Get(key string, creator service.Creator) (string, error) {
 	if service.CheckKey(key) {
 		return creator.StrGet(key), nil
 	} else {
-		fmt.Println("无此数据")
 		return "无此数据", internal.NoKeyError("礼品码不存在")
 	}
 }

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"day3/internal"
 	"fmt"
 	"github.com/garyburd/redigo/redis"
 	"strconv"
@@ -38,14 +39,14 @@ func NewRedisPool(redisURL string, Database int) *redis.Pool {
 			c, err := redis.DialURL(URLs)
 			//c, err := redis.Dial("tcp",redisURL,redis.DialDatabase(5))
 			if err != nil {
-				return nil, fmt.Errorf("redis connection error: %s", err)
+				return nil, internal.InternalServiceError(err.Error())
 			}
-			return c, err
+			return c, nil
 		},
 		TestOnBorrow: func(c redis.Conn, t time.Time) error {
 			_, err := c.Do("PING")
 			if err != nil {
-				return fmt.Errorf("ping redis error: %s", err)
+				return internal.InternalServiceError("ping redis error: " + err.Error())
 			}
 			return nil
 		},

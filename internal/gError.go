@@ -22,6 +22,7 @@ const (
 	IsEmpty         = 1005 //参数不能为空
 	ValidPeriod     = 1006 //有效期不能小于当前时间
 	LenFalse        = 1007 //礼品码不合法
+	InternalService = 1008 //内部服务错误
 )
 
 // NoKeyError  礼品码不存在
@@ -83,6 +84,15 @@ func LenFalseError(message string) GlobalError {
 	return GlobalError{
 		Status:  http.StatusForbidden,
 		Code:    LenFalse,
+		Message: message,
+	}
+}
+
+//InternalServiceError   内部服务错误
+func InternalServiceError(message string) GlobalError {
+	return GlobalError{
+		Status:  http.StatusForbidden,
+		Code:    InternalService,
 		Message: message,
 	}
 }
