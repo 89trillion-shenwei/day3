@@ -21,6 +21,7 @@ func TestSet(t *testing.T) {
 	}
 }
 
+//测试查询数据方法
 func TestGet(t *testing.T) {
 	key := "a8e46a16"
 	creator := service.Creator{}
@@ -35,6 +36,7 @@ func TestGet(t *testing.T) {
 	}
 }
 
+//测试领取礼品方法
 func TestUpdate(t *testing.T) {
 	key := "a8e46a16"
 	user := service.User{}
