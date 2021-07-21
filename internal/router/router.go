@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetStrRouter() *gin.Engine {
+func GiftRouter() *gin.Engine {
 	router := gin.Default()
 	//录入数据
 	router.POST("/SetStr", ctrl.ReturnData(ctrl.SetStrApi))
