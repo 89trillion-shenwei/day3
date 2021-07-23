@@ -19,10 +19,8 @@
 │   ├── app
 │   ├── http
 │   │   └── httpServer.go
-│   ├── main.go
-│   └── model
-│       └── database.go
-├── day3压力测试报告.html
+│   └── main.go
+├── day3压力测试.html
 ├── day3流程图.png
 ├── go.mod
 ├── go.sum
@@ -33,12 +31,15 @@
 │   ├── handler
 │   │   ├── operation.go
 │   │   └── operation_test.go
+│   ├── model
+│   │   └── database.go
 │   ├── router
 │   │   └── router.go
-│   └── service
-│       └── dealData.go
+│   ├── service
+│   │   └── dealData.go
+│   └── util
+│       └── util.go
 └── locustfile.py
-
 
 ```
 
@@ -50,14 +51,14 @@
 |  路由层   | /internal/router/router.go     | 路由转发                | 被应用层调用，调用控制层  | 不可同层调用 |
 |  控制层   | /internal/ctrl/api.go          | 请求参数处理，响应      | 被路由层调用，调用handler | 不可同层调用 |
 | handler层 | /internal/handler/operation.go | 处理具体业务            | 被控制层调用              | 不可同层调用 |
-|  model层  | /app/model/database.go         | redis储存需要的数据结构 | 被handler调用             | 不可同层调用 |
+|  model层  | /internal/model/database.go    | redis储存需要的数据结构 | 被handler调用             | 不可同层调用 |
 | 压力测试  | locustfile.py                  | 进行压力测试            | 无调用关系                | 不可同层调用 |
 |  gError   | /internal/gError               | 统一异常处理            | 被handler调用             | 不可同层调用 |
 | service层 | /internal/service/dealDate.go  | 操作redis数据库         | 被handler层调用           | 不可同层调用 |
 
 ## 4.存储设计
 
-通过string的方式存入redis，key为礼品码，value为礼品信息，礼品信息是一个结构体，取数据时，先将json串转为结构体然后在进行操作
+通过string的方式存入redis，两个表，一个key为礼品码，value为礼品信息，另一个key为礼品码，value为领取信息。礼品信息和领取信息是两个个结构体，取数据时，先将json串转为结构体然后在进行操作
 
 ## 5.接口设计
 
@@ -73,13 +74,15 @@ http post
 
 localhost:8000/SetStr   参数例子 
 
-| Key            | Value               | 描述       |
-| -------------- | ------------------- | ---------- |
-| Description    | 张三录入礼品信息    | 描述信息   |
-| Creator        | 张三                | 创建者     |
-| AvailableTimes | 10                  | 可领取次数 |
-| List           | 士兵,4,炮车,8       | 礼品清单   |
-| ValidPeriod    | 2021-01-02 00:00:00 | 有效期     |
+| Key            | Value               | 描述                      |
+| -------------- | ------------------- | ------------------------- |
+| Description    | 张三录入礼品信息    | 描述信息                  |
+| Creator        | 张三                | 创建者                    |
+| AvailableTimes | 10                  | 可领取次数                |
+| List           | 1001,4,1002,8       | 礼品清单                  |
+| ValidPeriod    | 2021-01-02 00:00:00 | 有效期                    |
+| CodeType       | 2                   | 礼品码类型，只能为1，2，3 |
+| CanGetUser     | 1627009174467598000 | 可领取用户                |
 
 响应状态码
 
@@ -92,6 +95,9 @@ localhost:8000/SetStr   参数例子
 | 1005   | 参数不能为空           |
 | 1006   | 有效期不能小于当前时间 |
 | 1007   | 礼品码不合法           |
+| 1008   | 内部服务错误           |
+| 1009   | 礼品码种类不符合要求   |
+| 1010   | 非指定用户             |
 
 ## 6.第三方库
 
