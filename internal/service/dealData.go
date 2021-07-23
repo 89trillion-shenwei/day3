@@ -6,9 +6,26 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/garyburd/redigo/redis"
+	"log"
 	"strconv"
+	"sync"
 	"time"
 )
+
+var (
+	wg       sync.WaitGroup
+	lockChan = make(chan struct{}, 1)
+)
+
+// 如果lockChan中为空则阻塞
+func getLock() {
+	<-lockChan
+}
+
+// 重新填充lockChan
+func releaseLock() {
+	lockChan <- struct{}{}
+}
 
 // List 物品列表
 type List struct {
@@ -38,6 +55,7 @@ type Mess struct {
 	AvailableTimes string    //可领取次数
 	ReceivedTimes  string    //已领取次数
 	GiftCode       string    //礼品码
+	key            string    //计数
 	GetList        []GetList //领取列表
 }
 
@@ -139,6 +157,8 @@ func (User *User) StrUpdate(key string) (string, error) {
 	c2 := model2.RedisPool1.Get()
 	defer c1.Close()
 	defer c2.Close()
+	//上锁
+	releaseLock()
 	//查询数据
 	res1, err1 := redis.String(c1.Do("Get", key))
 	res2, err2 := redis.String(c2.Do("Get", key))
@@ -183,6 +203,12 @@ func (User *User) StrUpdate(key string) (string, error) {
 				} else {
 					fmt.Println("set ok.")
 				}
+				//incr key
+				_, err1 := redis.Int64(c2.Do("INCR", "key"))
+				if err1 != nil {
+					log.Println("INCR failed:", err)
+					return "", internal.InternalServiceError(err1.Error())
+				}
 			} else {
 				return "", internal.NoCanGetUserError("非指定用户")
 			}
@@ -212,6 +238,12 @@ func (User *User) StrUpdate(key string) (string, error) {
 			} else {
 				fmt.Println("set ok.")
 			}
+			//incr key
+			_, err1 := redis.Int64(c2.Do("INCR", "key"))
+			if err1 != nil {
+				log.Println("INCR failed:", err)
+				return "", internal.InternalServiceError(err1.Error())
+			}
 		} else {
 			getList := new(GetList)
 			//用户名
@@ -234,7 +266,15 @@ func (User *User) StrUpdate(key string) (string, error) {
 			} else {
 				fmt.Println("set ok.")
 			}
+			//incr key
+			_, err1 := redis.Int64(c2.Do("INCR", "key"))
+			if err1 != nil {
+				log.Println("INCR failed:", err)
+				return "", internal.InternalServiceError(err1.Error())
+			}
 		}
+		//解锁
+		getLock()
 		//返回礼品内容
 		return string("您将获得的礼品有：" + string(struct2json(message.List))), nil
 	}
