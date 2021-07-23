@@ -24,29 +24,31 @@ func CreatePasswd() string {
 }
 
 // Set 存数据
-func Set(message service.Message, creator service.Creator) string {
+func Set(message service.Message, mess service.Mess, creator service.Creator) string {
 	key := CreatePasswd()
 	//如果物品码不在数据库中，正常情况下是不可能一样
 	if !service.CheckKey(key) {
 		message.GiftCode = key
-		creator.StrSet(key, message)
+		mess.GiftCode = key
+		creator.StrSet(key, message, mess)
 		return key
 	} else {
 		//数据库已经有了就重新生成一个
 		key1 := CreatePasswd()
 		message.GiftCode = key1
-		creator.StrSet(key1, message)
+		mess.GiftCode = key1
+		creator.StrSet(key1, message, mess)
 		return key1
 	}
 }
 
 // Get 查询数据
-func Get(key string, creator service.Creator) (string, error) {
+func Get(key string, creator service.Creator) (s1, s2 string, err error) {
 	//如果key存在
 	if service.CheckKey(key) {
-		return creator.StrGet(key), nil
+		return creator.GetGiftCodeInformation(key), creator.GetGiftCollectionInformation(key), nil
 	} else {
-		return "无此数据", internal.NoKeyError("礼品码不存在")
+		return "", "", internal.NoKeyError("礼品码不存在")
 	}
 }
 

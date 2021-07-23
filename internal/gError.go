@@ -23,6 +23,8 @@ const (
 	ValidPeriod     = 1006 //有效期不能小于当前时间
 	LenFalse        = 1007 //礼品码不合法
 	InternalService = 1008 //内部服务错误
+	CodeType        = 1009 //礼品码种类不符合要求
+	NoCanGetUser    = 1010 //非指定用户
 )
 
 // NoKeyError  礼品码不存在
@@ -93,6 +95,24 @@ func InternalServiceError(message string) GlobalError {
 	return GlobalError{
 		Status:  http.StatusForbidden,
 		Code:    InternalService,
+		Message: message,
+	}
+}
+
+//CodeTypeError   礼品码种类不符合要求
+func CodeTypeError(message string) GlobalError {
+	return GlobalError{
+		Status:  http.StatusForbidden,
+		Code:    CodeType,
+		Message: message,
+	}
+}
+
+//NoCanGetUserError  非指定用户
+func NoCanGetUserError(message string) GlobalError {
+	return GlobalError{
+		Status:  http.StatusForbidden,
+		Code:    NoCanGetUser,
 		Message: message,
 	}
 }

@@ -10,7 +10,7 @@ func GiftRouter() *gin.Engine {
 	//录入数据
 	router.POST("/SetStr", ctrl.ReturnData(ctrl.SetStrApi))
 	//查询数据
-	router.POST("/GetStr", ctrl.ReturnData(ctrl.GetStrApi))
+	router.POST("/GetStr", ctrl.ReturnData1(ctrl.GetStrApi))
 	//领取礼品
 	router.POST("/UpdateStr", ctrl.ReturnData(ctrl.StrUpdateApi))
 	return router
