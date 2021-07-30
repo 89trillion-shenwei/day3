@@ -1,4 +1,4 @@
-package handler
+package model
 
 import (
 	"day3/internal/service"

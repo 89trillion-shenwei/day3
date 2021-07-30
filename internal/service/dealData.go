@@ -2,14 +2,14 @@ package service
 
 import (
 	"day3/internal"
-	model2 "day3/internal/model"
 	"encoding/json"
 	"fmt"
-	"github.com/garyburd/redigo/redis"
 	"log"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/garyburd/redigo/redis"
 )
 
 var (
@@ -108,8 +108,8 @@ func json2struct1(byts []byte, message *Mess) bool {
 
 // StrSet 创建数据
 func (creator *Creator) StrSet(key string, message Message, mess Mess) error {
-	c1 := model2.RedisPool.Get()
-	c2 := model2.RedisPool1.Get()
+	c1 := RedisPool.Get()
+	c2 := RedisPool1.Get()
 	defer c1.Close()
 	defer c2.Close()
 	time := String2Time(message.ValidPeriod) - String2Time(message.CreatTime)
@@ -137,7 +137,7 @@ func (creator *Creator) StrSet(key string, message Message, mess Mess) error {
 
 // GetGiftCodeInformation 获取礼品码信息
 func (creator *Creator) GetGiftCodeInformation(key string) string {
-	c := model2.RedisPool.Get()
+	c := RedisPool.Get()
 	defer c.Close()
 	res, _ := redis.String(c.Do("GET", key))
 	return res
@@ -145,7 +145,7 @@ func (creator *Creator) GetGiftCodeInformation(key string) string {
 
 // GetGiftCollectionInformation 获取领取信息
 func (creator *Creator) GetGiftCollectionInformation(key string) string {
-	c := model2.RedisPool1.Get()
+	c := RedisPool1.Get()
 	defer c.Close()
 	res, _ := redis.String(c.Do("GET", key))
 	return res
@@ -153,12 +153,12 @@ func (creator *Creator) GetGiftCollectionInformation(key string) string {
 
 // StrUpdate 用户领取礼品时更新数据库，增加领取人列表，修改可领取次数和已领取次数，返回礼品列表
 func (User *User) StrUpdate(key string) (string, error) {
-	c1 := model2.RedisPool.Get()
-	c2 := model2.RedisPool1.Get()
+	c1 := RedisPool.Get()
+	c2 := RedisPool1.Get()
 	defer c1.Close()
 	defer c2.Close()
-	//上锁
-	releaseLock()
+	/*//上锁
+	releaseLock()*/
 	//查询数据
 	res1, err1 := redis.String(c1.Do("Get", key))
 	res2, err2 := redis.String(c2.Do("Get", key))
@@ -220,7 +220,7 @@ func (User *User) StrUpdate(key string) (string, error) {
 			getList.GetTime = time.Now().Format("2006-01-02 15:04:05")
 			//判断该用户是否已经使用过该礼品码
 			if findUser(mess.GetList, User.UserName) {
-				return "你已使用过该礼品码", internal.UserHasEeceivedError("你已使用过该礼品码")
+				return "", internal.UserHasEeceivedError("你已使用过该礼品码")
 			}
 			mess.GetList = append(mess.GetList, *getList)
 			//可领取次数
@@ -244,21 +244,22 @@ func (User *User) StrUpdate(key string) (string, error) {
 				log.Println("INCR failed:", err)
 				return "", internal.InternalServiceError(err1.Error())
 			}
-		} else {
+		} else { //不指定用户,不限制次数
 			getList := new(GetList)
 			//用户名
 			getList.GetorName = User.UserName
 			//领取时间
 			getList.GetTime = time.Now().Format("2006-01-02 15:04:05")
+			//判断该用户是否已经使用过该礼品码
+			if findUser(mess.GetList, User.UserName) {
+				return "你已使用过该礼品码", internal.UserHasEeceivedError("你已使用过该礼品码")
+			}
 			mess.GetList = append(mess.GetList, *getList)
-			//可领取次数
-			av, _ := strconv.Atoi(mess.AvailableTimes)
-			av -= 1
 			//已领取次数
 			re, _ := strconv.Atoi(mess.ReceivedTimes)
 			re += 1
 			mess.ReceivedTimes = strconv.Itoa(re)
-			mess.AvailableTimes = strconv.Itoa(av)
+			mess.AvailableTimes = "99999999"
 			//提交更改后的数据
 			_, err := c2.Do("SET", key, struct2json(mess))
 			if err != nil {
@@ -273,8 +274,8 @@ func (User *User) StrUpdate(key string) (string, error) {
 				return "", internal.InternalServiceError(err1.Error())
 			}
 		}
-		//解锁
-		getLock()
+		/*//解锁
+		getLock()*/
 		//返回礼品内容
 		return string("您将获得的礼品有：" + string(struct2json(message.List))), nil
 	}
@@ -282,7 +283,7 @@ func (User *User) StrUpdate(key string) (string, error) {
 
 // CheckKey 判断数据是否存在
 func CheckKey(key string) bool {
-	c := model2.RedisPool.Get()
+	c := RedisPool.Get()
 	defer c.Close()
 	exist, err := redis.Bool(c.Do("EXISTS", key))
 	if err != nil {

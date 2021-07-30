@@ -1,12 +1,13 @@
-package model
+package service
 
 import (
 	"day3/internal"
 	"fmt"
-	"github.com/garyburd/redigo/redis"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/garyburd/redigo/redis"
 )
 
 // ManRedisKey redis接口
