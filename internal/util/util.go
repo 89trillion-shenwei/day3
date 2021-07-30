@@ -1,12 +1,12 @@
 package util
 
 import (
-	"day3/internal/service"
+	"day3/internal/model"
 )
 
 func Init() {
 	//储存礼品码信息
-	service.RedisPool = service.NewRedisPool(service.RedisURL, 1)
+	model.RedisPool = model.NewRedisPool(model.RedisURL, 1)
 	//储存领取信息
-	service.RedisPool1 = service.NewRedisPool(service.RedisURL, 2)
+	model.RedisPool1 = model.NewRedisPool(model.RedisURL, 2)
 }
