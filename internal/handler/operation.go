@@ -1,9 +1,9 @@
-package model
+package handler
 
 import (
 	"crypto/md5"
 	"day3/internal"
-	"day3/internal/service"
+	"day3/internal/model"
 	"fmt"
 	"io"
 	"time"
@@ -24,10 +24,10 @@ func CreatePasswd() string {
 }
 
 // Set 存数据
-func Set(message service.Message, mess service.Mess, creator service.Creator) string {
+func Set(message model.Message, mess model.Mess, creator model.Creator) string {
 	key := CreatePasswd()
 	//如果物品码不在数据库中，正常情况下是不可能一样
-	if !service.CheckKey(key) {
+	if !model.CheckKey(key) {
 		message.GiftCode = key
 		mess.GiftCode = key
 		creator.StrSet(key, message, mess)
@@ -43,9 +43,9 @@ func Set(message service.Message, mess service.Mess, creator service.Creator) st
 }
 
 // Get 查询数据
-func Get(key string, creator service.Creator) (s1, s2 string, err error) {
+func Get(key string, creator model.Creator) (s1, s2 string, err error) {
 	//如果key存在
-	if service.CheckKey(key) {
+	if model.CheckKey(key) {
 		return creator.GetGiftCodeInformation(key), creator.GetGiftCollectionInformation(key), nil
 	} else {
 		return "", "", internal.NoKeyError("礼品码不存在")
@@ -53,8 +53,8 @@ func Get(key string, creator service.Creator) (s1, s2 string, err error) {
 }
 
 // Update 用户领取礼品，更新数据
-func Update(user service.User, key string) (string, error) {
-	if service.CheckKey(key) {
+func Update(user model.User, key string) (string, error) {
+	if model.CheckKey(key) {
 		return user.StrUpdate(key)
 	} else {
 		return "礼品码不存在，请重新输入！", internal.NoKeyError("礼品码不存在")

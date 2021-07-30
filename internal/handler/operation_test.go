@@ -1,7 +1,7 @@
-package model
+package handler
 
 import (
-	"day3/internal/service"
+	"day3/internal/model"
 	"day3/internal/util"
 	"testing"
 	"time"
@@ -10,14 +10,14 @@ import (
 //测试创建数据方法，若redis数据库里可以找到数据则success
 func TestSet(t *testing.T) {
 	util.Init()
-	message := service.Message{}
-	mess := service.Mess{}
-	creator := service.Creator{}
+	message := model.Message{}
+	mess := model.Mess{}
+	creator := model.Creator{}
 	message.Description = "测试一"
 	creator.CreaName = "测试员1"
 	message.ValidPeriod = "2022-01-02 15:04:05"
-	list1 := new(service.List)
-	list2 := new(service.List)
+	list1 := new(model.List)
+	list2 := new(model.List)
 	list1.Name = "1001"
 	list1.Amount = "4"
 	list2.Name = "1002"
@@ -28,7 +28,7 @@ func TestSet(t *testing.T) {
 	message.CreatTime = time.Now().Format("2006-01-02 15:04:05")
 	mess.AvailableTimes = "100"
 	key := Set(message, mess, creator)
-	if service.CheckKey(key) {
+	if model.CheckKey(key) {
 		t.Log("success")
 		return
 	} else {
@@ -41,7 +41,7 @@ func TestSet(t *testing.T) {
 func TestGet(t *testing.T) {
 	util.Init()
 	key := "45e72e99"
-	creator := service.Creator{}
+	creator := model.Creator{}
 	creator.CreaName = "测试员1"
 	got1, got2, _ := Get(key, creator)
 	if got1 != "" && got2 != "" {
@@ -57,7 +57,7 @@ func TestGet(t *testing.T) {
 func TestUpdate(t *testing.T) {
 	util.Init()
 	key := "45e72e99"
-	user := service.User{}
+	user := model.User{}
 	user.UserName = "用户一"
 	got, _ := Update(user, key)
 	if got != "" {
