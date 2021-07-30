@@ -287,18 +287,6 @@ func Json2struct1(byts []byte, message *Mess) bool {
 
 }
 
-// CheckKey 判断数据是否存在
-func CheckKey(key string) bool {
-	c := RedisPool.Get()
-	defer c.Close()
-	exist, err := redis.Bool(c.Do("EXISTS", key))
-	if err != nil {
-		return false
-	} else {
-		return exist
-	}
-}
-
 // FindUser 判断用户是否已经领取过礼品
 func FindUser(list []GetList, name string) bool {
 	for _, item := range list {
