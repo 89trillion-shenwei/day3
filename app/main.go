@@ -3,8 +3,6 @@ package main
 import (
 	"day3/app/http"
 	"day3/internal/util"
-	_ "errors"
-	_ "reflect"
 )
 
 func main() {

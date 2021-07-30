@@ -2,12 +2,13 @@ package ctrl
 
 import (
 	"day3/internal"
-	"day3/internal/handler"
+	"day3/internal/model"
 	"day3/internal/service"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 // SetStrApi 录入礼品
@@ -62,7 +63,7 @@ func SetStrApi(c *gin.Context) (string, error) {
 	}
 	creator := new(service.Creator)
 	creator.CreaName = c.PostForm("Creator")
-	re := handler.Set(*message, *mess, *creator)
+	re := model.Set(*message, *mess, *creator)
 	return re, nil
 }
 
@@ -77,7 +78,7 @@ func GetStrApi(c *gin.Context) (s1, s2 string, err error) {
 		return "", "", internal.LenFalseError("礼品码不合法")
 	}
 	creator := new(service.Creator)
-	re1, re2, err := handler.Get(key, *creator)
+	re1, re2, err := model.Get(key, *creator)
 	if err != nil {
 		return "", "", err
 	}
@@ -97,7 +98,7 @@ func StrUpdateApi(c *gin.Context) (string, error) {
 	if user.UserName == "" {
 		return "", internal.IsEmptyError("用户名不能为空")
 	}
-	re, err := handler.Update(*user, key)
+	re, err := model.Update(*user, key)
 	if err != nil {
 		return "", err
 	}
