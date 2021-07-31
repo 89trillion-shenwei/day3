@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"day3/internal"
 	"day3/internal/model"
+	"day3/internal/service"
 	"fmt"
 	"io"
 	"time"
@@ -24,7 +25,7 @@ func CreatePasswd() string {
 }
 
 // Set 存数据
-func Set(message model.Message, mess model.Mess, creator model.Creator) string {
+func Set(message model.Message, mess model.Mess, creator service.Creator) string {
 	key := CreatePasswd()
 	//如果物品码不在数据库中，正常情况下是不可能一样
 	if !model.CheckKey(key) {
@@ -43,7 +44,7 @@ func Set(message model.Message, mess model.Mess, creator model.Creator) string {
 }
 
 // Get 查询数据
-func Get(key string, creator model.Creator) (s1, s2 string, err error) {
+func Get(key string, creator service.Creator) (s1, s2 string, err error) {
 	//如果key存在
 	if model.CheckKey(key) {
 		return creator.GetGiftCodeInformation(key), creator.GetGiftCollectionInformation(key), nil
@@ -53,7 +54,7 @@ func Get(key string, creator model.Creator) (s1, s2 string, err error) {
 }
 
 // Update 用户领取礼品，更新数据
-func Update(user model.User, key string) (string, error) {
+func Update(user service.User, key string) (string, error) {
 	if model.CheckKey(key) {
 		return user.StrUpdate(key)
 	} else {

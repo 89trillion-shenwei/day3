@@ -2,6 +2,7 @@ package handler
 
 import (
 	"day3/internal/model"
+	"day3/internal/service"
 	"day3/internal/util"
 	"testing"
 	"time"
@@ -12,7 +13,7 @@ func TestSet(t *testing.T) {
 	util.Init()
 	message := model.Message{}
 	mess := model.Mess{}
-	creator := model.Creator{}
+	creator := service.Creator{}
 	message.Description = "测试一"
 	creator.CreaName = "测试员1"
 	message.ValidPeriod = "2022-01-02 15:04:05"
@@ -41,7 +42,7 @@ func TestSet(t *testing.T) {
 func TestGet(t *testing.T) {
 	util.Init()
 	key := "45e72e99"
-	creator := model.Creator{}
+	creator := service.Creator{}
 	creator.CreaName = "测试员1"
 	got1, got2, _ := Get(key, creator)
 	if got1 != "" && got2 != "" {
@@ -57,7 +58,7 @@ func TestGet(t *testing.T) {
 func TestUpdate(t *testing.T) {
 	util.Init()
 	key := "45e72e99"
-	user := model.User{}
+	user := service.User{}
 	user.UserName = "用户一"
 	got, _ := Update(user, key)
 	if got != "" {
