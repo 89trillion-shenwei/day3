@@ -40,7 +40,7 @@ func SetStrApi(c *gin.Context) (string, error) {
 	if message.ValidPeriod == "" {
 		return "", internal.IsEmptyError("有效期不能为空")
 	}
-	if service.String2Time(message.CreatTime) >= service.String2Time(message.ValidPeriod) {
+	if model.String2Time(message.CreatTime) >= model.String2Time(message.ValidPeriod) {
 		return "", internal.ValidPeriodError("有效期不能小于当前时间")
 	}
 	//可领取次数
@@ -62,7 +62,7 @@ func SetStrApi(c *gin.Context) (string, error) {
 		list.Amount = s[i*2+1]
 		message.List = append(message.List, *list)
 	}
-	creator := new(model.Creator)
+	creator := new(service.Creator)
 	creator.CreaName = c.PostForm("Creator")
 	re := handler.Set(*message, *mess, *creator)
 	return re, nil
@@ -78,7 +78,7 @@ func GetStrApi(c *gin.Context) (s1, s2 string, err error) {
 	if len(key) != 8 {
 		return "", "", internal.LenFalseError("礼品码不合法")
 	}
-	creator := new(model.Creator)
+	creator := new(service.Creator)
 	re1, re2, err := handler.Get(key, *creator)
 	if err != nil {
 		return "", "", err
@@ -87,7 +87,7 @@ func GetStrApi(c *gin.Context) (s1, s2 string, err error) {
 }
 
 func StrUpdateApi(c *gin.Context) (string, error) {
-	user := new(model.User)
+	user := new(service.User)
 	key := c.PostForm("key")
 	if key == "" {
 		return "", internal.IsEmptyError("礼品码不能为空")

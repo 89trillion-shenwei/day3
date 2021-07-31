@@ -2,6 +2,7 @@ package router
 
 import (
 	"day3/internal/ctrl"
+
 	"github.com/gin-gonic/gin"
 )
 

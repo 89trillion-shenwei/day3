@@ -35,7 +35,7 @@
 │   │   └── operation_test.go
 │   ├── model
 │   │   ├── database.go
-│   │   └── model.go
+│   │   └── redisOperation.go
 │   ├── router
 │   │   └── router.go
 │   ├── service
@@ -55,7 +55,7 @@
 |  路由层   | /internal/router/router.go     | 路由转发           | 被应用层调用，调用控制层   | 不可同层调用 |
 |  控制层   | /internal/ctrl/api.go          | 请求参数处理，响应 | 被路由层调用，调用handler  | 不可同层调用 |
 | handler层 | /internal/handler/operation.go | 处理具体业务       | 被控制层调用               | 不可同层调用 |
-|  model层  | model.go  database.go          | 数据库相关操作     | 被handler调用和service调用 | 不可同层调用 |
+|  model层  | redisOperation.go  newRedis.go | 数据库相关操作     | 被handler调用和service调用 | 不可同层调用 |
 | 压力测试  | locustfile.py                  | 进行压力测试       | 无调用关系                 | 不可同层调用 |
 |  gError   | /internal/gError               | 统一异常处理       | 被handler调用              | 不可同层调用 |
 | service层 | /internal/service/dealDate.go  | 通用业务逻辑       | 被ctrl层调用               | 可同层调用   |
@@ -134,16 +134,8 @@ localhost:8000/SetStr   参数例子
 ## 6.第三方库
 
 ```
-  _ "errors"
-	_ "reflect"
-	"github.com/gin-gonic/gin"
-	"net/http"
-	"strings"
-	"time"
-	"io"
-	"testing"
-	"encoding/json"
-	"strconv"
+github.com/gin-gonic/gin
+github.com/garyburd/redigo/redis
 ```
 
 ## 7.编译运行
