@@ -30,7 +30,7 @@ const (
 // NoKeyError  礼品码不存在
 func NoKeyError(message string) GlobalError {
 	return GlobalError{
-		Status:  http.StatusForbidden,
+		Status:  http.StatusOK,
 		Code:    NoKey,
 		Message: message,
 	}
@@ -39,7 +39,7 @@ func NoKeyError(message string) GlobalError {
 // KeyExpiredError 礼品码过期
 func KeyExpiredError(message string) GlobalError {
 	return GlobalError{
-		Status:  http.StatusForbidden,
+		Status:  http.StatusOK,
 		Code:    KeyExpired,
 		Message: message,
 	}
@@ -48,7 +48,7 @@ func KeyExpiredError(message string) GlobalError {
 // UserHasEeceivedError 不可重复领取
 func UserHasEeceivedError(message string) GlobalError {
 	return GlobalError{
-		Status:  http.StatusForbidden,
+		Status:  http.StatusOK,
 		Code:    UserHasEeceived,
 		Message: message,
 	}
@@ -57,7 +57,7 @@ func UserHasEeceivedError(message string) GlobalError {
 // NoGiftError  礼品全部领完
 func NoGiftError(message string) GlobalError {
 	return GlobalError{
-		Status:  http.StatusForbidden,
+		Status:  http.StatusOK,
 		Code:    NoGift,
 		Message: message,
 	}
@@ -66,7 +66,7 @@ func NoGiftError(message string) GlobalError {
 //IsEmptyError  参数不能为空
 func IsEmptyError(message string) GlobalError {
 	return GlobalError{
-		Status:  http.StatusForbidden,
+		Status:  http.StatusOK,
 		Code:    IsEmpty,
 		Message: message,
 	}
@@ -75,7 +75,7 @@ func IsEmptyError(message string) GlobalError {
 //ValidPeriodError  有效期不能小于当前时间
 func ValidPeriodError(message string) GlobalError {
 	return GlobalError{
-		Status:  http.StatusForbidden,
+		Status:  http.StatusOK,
 		Code:    ValidPeriod,
 		Message: message,
 	}
@@ -84,7 +84,7 @@ func ValidPeriodError(message string) GlobalError {
 //LenFalseError  礼品码不合法
 func LenFalseError(message string) GlobalError {
 	return GlobalError{
-		Status:  http.StatusForbidden,
+		Status:  http.StatusOK,
 		Code:    LenFalse,
 		Message: message,
 	}
@@ -93,7 +93,7 @@ func LenFalseError(message string) GlobalError {
 //InternalServiceError   内部服务错误
 func InternalServiceError(message string) GlobalError {
 	return GlobalError{
-		Status:  http.StatusForbidden,
+		Status:  http.StatusOK,
 		Code:    InternalService,
 		Message: message,
 	}
@@ -102,7 +102,7 @@ func InternalServiceError(message string) GlobalError {
 //CodeTypeError   礼品码种类不符合要求
 func CodeTypeError(message string) GlobalError {
 	return GlobalError{
-		Status:  http.StatusForbidden,
+		Status:  http.StatusOK,
 		Code:    CodeType,
 		Message: message,
 	}
@@ -111,7 +111,7 @@ func CodeTypeError(message string) GlobalError {
 //NoCanGetUserError  非指定用户
 func NoCanGetUserError(message string) GlobalError {
 	return GlobalError{
-		Status:  http.StatusForbidden,
+		Status:  http.StatusOK,
 		Code:    NoCanGetUser,
 		Message: message,
 	}
